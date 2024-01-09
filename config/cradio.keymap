@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 The ZMK Contributors
+ * Copyright (c) 2022 Megamind
  *
  * SPDX-License-Identifier: MIT
  */
@@ -7,96 +7,356 @@
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
 
+
+
+#define BASE   0
+#define BUTTON 1
+#define NAV    2
+#define MOUSE  3
+#define MEDIA  4
+#define NUM    5
+#define SYM    6
+#define FUN    7
+#define RARE   8
+#define AKa    9
+#define AKs    10
+#define AKb    11 
+#define AKgp   12
+#define QWERTY    14
+#define AKm    13 
+
+#define U_TAPPING_TERM 200
+
+#define U_NP &none // key is not present
+#define U_NA &none // present but not available for use
+#define U_NU &none // available but not used
+
+#define U_BTN1 &kp KP_N5
+#define U_BTN2 U_NU
+#define U_BTN3 U_NU
+#define U_MS_D &kp KP_N2
+#define U_MS_L &kp KP_N4
+#define U_MS_R &kp KP_N6
+#define U_MS_U &kp KP_N8
+#define U_WH_D U_NU
+#define U_WH_L U_NU
+#define U_WH_R U_NU
+#define U_WH_U U_NU
+
+#define U_RDO &kp LC(Y)
+#define U_PST &kp LC(V)
+#define U_CPY &kp LC(C)
+#define U_CUT &kp LC(X)
+#define U_UND &kp LC(Z)
+
+#define MIRYOKU_COMBO_TPSL 31 32
+#define MIRYOKU_COMBO_TPSR 33 34
+
+#define MACRO(name, ...) \
+  name: name { \
+      wait-ms = <0>; \
+      tap-ms = <0>; \
+			compatible = "zmk,behavior-macro"; \
+			label = #name; \
+			#binding-cells = <0>; \
+			bindings = __VA_ARGS__; \
+		};
+
+#define COMBO(name, p, b) \
+  combo_##name { \
+      timeout-ms = <30>; \
+      key-positions = <p>; \
+      bindings = <b>; \
+  }; 
 
 &mt {
-  //  flavor = "tap-preferred";
-   // tapping_term_ms = <200>;
+    // flavor = "tap-preferred";
+    // tapping_term_ms = <200>;
 };
 
-/ { 
+&sl {
+    release-after-ms = <400>;
+};
 
-    combos {
+
+&caps_word {
+    continue-list = <UNDERSCORE MINUS>;
+};
+
+/ {
+      combos {
         compatible = "zmk,combos";
-        combo_esc {
-            timeout-ms = <50>;
-            key-positions = <0 1>;
-            bindings = <&kp ESC>;
-        };
-        
-         combo_tab {
-            timeout-ms = <50>;
+
+        COMBO(left_brace, 1 11, &kp LBRC)
+        COMBO(left_square, 2 12, &kp LBKT)
+        COMBO(left_paren, 3 13, &kp LPAR)
+        COMBO(right_brace, 8 18, &kp RBRC)
+        COMBO(right_square, 7 17, &kp RBKT)
+        COMBO(right_paren, 6 16, &kp RPAR)
+        COMBO(th, 12 13, &th)
+        COMBO(ch, 11 13, &ch)
+        COMBO(sh, 11 12, &sh)
+        COMBO(gh, 1 2, &gh)
+        COMBO(wh, 2 3, &wh)
+        COMBO(q, 5 6, &kp Q)
+        COMBO(z, 1 2, &kp Z)
+        COMBO(j, 2 3, &kp J)
+
+
+        combo_tab {
+            timeout-ms = <20>;
             key-positions = <10 11>;
             bindings = <&kp TAB>;
         };
-        
-            combo_ralt {
-            timeout-ms = <50>;
-            key-positions = <17 16>;
-            bindings = <&kp RALT>;
+        combo_tpsl_BASE {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSL>;
+          bindings = <&lt MEDIA ESC>;
+          layers = <BASE>;
         };
-        
-                    combo_lalt {
-            timeout-ms = <50>;
-            key-positions = <11 12>;
-            bindings = <&kp LALT>;
+        combo_tpsl_NUM {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSL>;
+          bindings = <&kp DOT>;
+          layers = <NUM>;
         };
-        
-                           combo_lgui {
-            timeout-ms = <50>;
-            key-positions = <12 13>;
-            bindings = <&kp LGUI>;
+        combo_tpsl_SYM {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSL>;
+          bindings = <&kp LPAR>;
+          layers = <SYM>;
         };
-        
-        
-           combo_rgui {
-            timeout-ms = <50>;
-            key-positions = <17 18>;
-            bindings = <&kp RGUI>;
+        combo_tpsl_FUN {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSL>;
+          bindings = <&kp K_APP>;
+          layers = <FUN>;
         };
-        
+        combo_tpsr_BASE {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSR>;
+          bindings = <&lt FUN DEL>;
+          layers = <BASE>;
+        };
+        combo_tpsr_BUTTON {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSR>;
+          bindings = <U_BTN2>;
+          layers = <BUTTON>;
+        };
+        combo_tpsr_NAV {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSR>;
+          bindings = <&kp DEL>;
+          layers = <NAV>;
+        };
+        combo_tpsr_MOUSE {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSR>;
+          bindings = <U_BTN2>;
+          layers = <MOUSE>;
+        };
+        combo_tpsr_MEDIA {
+          timeout-ms = <200>;
+          key-positions = <MIRYOKU_COMBO_TPSR>;
+          bindings = <&kp K_MUTE>;
+          layers = <MEDIA>;
+        };
+        combo_tpsr_tobase {
+          timeout-ms = <200>;
+          key-positions = <0 1 2 3>;
+          bindings = <&to BASE>;
+          layers = <QWERTY>;
+        };
 
-        
     };
 
-        keymap {
-                compatible = "zmk,keymap";
-                
-       		default_layer {
-		bindings = <
-		&kp Q &kp W &kp E &kp R &kp T 						&kp Y &kp U  &kp I    &kp O   &kp P 
-		&kp A &kp S &kp D &kp F &kp G 			        	        &kp H &kp J &kp K &kp L &kp QUOT
-		&mt LSFT Z &kp X &kp C &kp V &kp B				        &kp N &kp M  &kp CMMA &kp DOT &mt LSFT RET
-          				&mo 1 &kp LCTL  				&kp SPC &mo 2 
-		>;
-		};
+    keymap {
+        compatible = "zmk,keymap";
 
-       		left_layer {
+        base_layer {
+            bindings = <
+              &kp Q       &ak_g      &ak_m       &ak_p       &kp V          &kp J &kp DOT       &kp SLASH              &kp SQT  &kp RET 
+              &hm LGUI C   &hm_ak_s LALT 0 &hm LCTRL N &hm LSHFT T &kp W             &kp COMMA &hm_ak_a LSHFT 0 &hm LCTRL E &hm LALT I   &hm LGUI H
+              &lt BUTTON X &hm RALT F &kp L       &kp D       &ak_b            &kp Z &kp U       &kp O   &hm RALT Y &lt BUTTON K
+                            &lt MEDIA ESC &lt NAV R   &lt MOUSE TAB             &lt SYM BSPC &lt NUM SPC  &lt FUN DEL
+                >;
+        };
+        button_layer {
+            bindings = <
+              U_UND     U_CUT     U_CPY     U_PST     U_RDO      U_RDO    U_PST     U_CPY     U_CUT     U_UND
+              &kp LGUI  &kp LALT  &kp LCTRL &kp LSHFT &none      &none    &kp LSHFT &kp LCTRL &kp LALT  &kp LGUI
+              U_UND     U_CUT     U_CPY     U_PST     U_RDO      U_RDO    U_PST     U_CPY     U_CUT     U_UND
+                                  U_BTN2    U_BTN3    U_BTN1     U_BTN1   U_BTN3    U_BTN2
+                >;
+        };
+        navigation_layer {
+            bindings = <
+              &bootloader  U_NA     U_NA     U_NA     U_NA     U_RDO     U_PST     U_CPY     U_CUT     U_UND
+              &kp LGUI     &kp LALT     &kp LCTRL     &kp LSHFT     U_NA   &kp CAPS   &kp LEFT     &kp DOWN     &kp UP     &kp RIGHT    
+              U_NA         &kp RALT     U_NA     U_NA     U_NA      &kp INS &kp HOME     &kp PG_DN     &kp PG_UP     &kp END   
+                                                  U_NA     U_NA     U_NA     &kp BSPC     &kp BSPC     &kp DEL
+                >;
+        };
+        mouse_layer {
+            bindings = <
+              &bootloader     U_NA     U_NA     U_NA     U_NA     U_RDO     U_PST     U_CPY     U_CUT     U_UND
+              &kp LGUI     &kp LALT     &kp LCTRL     &kp LSHFT     U_NA     U_MS_L     U_MS_D     U_MS_U     U_MS_R     U_NU
+              U_NA     &kp RALT     U_NA     U_NA     U_NA     U_WH_L     U_WH_D     U_WH_U     U_WH_R     U_NU
+                                    U_NA     U_NA     U_NA     U_BTN1     U_BTN3     U_BTN2
+                >;
+        };
+        media_layer {
+            bindings = <
+              &bootloader     U_NA     U_NA     U_NA     U_NA     &caps_word     &to QWERTY     U_NA     U_NA     U_NA
+              &kp LGUI     &kp LALT     &kp LCTRL     &kp LSHFT     U_NA     &kp C_PREV     &kp C_VOL_DN     &kp C_VOL_UP     &kp C_NEXT     &out OUT_TOG
+              U_NA     &kp RALT     U_NA     U_NA     U_NA     &bt BT_SEL 0     &bt BT_SEL 1     &bt BT_SEL 2     &bt BT_SEL 3     &bt BT_CLR
+                                             U_NA     U_NA     U_NA     &kp C_STOP     &kp C_PP     &kp C_MUTE
+                >;
+        };
+        number_layer {
+            bindings = <
+              &kp LBKT     &kp NUM_7     &kp NUM_8     &kp NUM_9     &kp RBKT     U_NA     U_NA     U_NA     U_NA     &bootloader
+              &kp SEMI     &kp NUM_4     &kp NUM_5     &kp NUM_6     &kp EQL     U_NA     &kp LSHFT     &kp LCTRL     &kp LALT     &kp LGUI
+              &kp GRAVE     &kp NUM_1     &kp NUM_2     &kp NUM_3     &kp BSLH     U_NA     U_NA     U_NA     &kp RALT     U_NA
+                                &kp DOT     &kp NUM_0     &kp MINUS     U_NA     U_NA     U_NA
+                >;
+        };
+        symbol_layer {
+            bindings = <
+              &kp LBRC     &kp AMPS     &kp ASTRK     &kp LPAR   &kp RBRC     U_NA     U_NA     U_NA     U_NA     &bootloader
+              &kp COLON     &kp DLLR     &kp PRCT     &kp CRRT   &kp PLUS     U_NA     &kp LSHFT     &kp LCTRL     &kp LALT     &kp LGUI
+              &kp TILDE     &kp EXCL     &kp AT     &kp HASH     &kp PIPE     U_NA     U_NA     U_NA     &kp RALT     U_NA
+                                          &kp LPAR     &kp RPAR     &kp UNDER     U_NA     U_NA     U_NA
+                >;
+        };
+        function_layer {
+            bindings = <
+              &kp F12     &kp F7     &kp F8     &kp F9     &kp PSCRN     U_NA     U_NA     U_NA     U_NA     &bootloader
+              &kp F11     &kp F4     &kp F5     &kp F6     &kp SLCK     U_NA     &kp LSHFT     &kp LCTRL     &kp LALT     &kp LGUI
+              &kp F10     &kp F1     &kp F2     &kp F3     &kp PAUSE_BREAK     U_NA     U_NA     U_NA     &kp RALT     U_NA
+                                &kp K_APP     &kp SPC     &kp TAB     U_NA     U_NA     U_NA
+                >;
+        };
+        rare_layer {
+            bindings = <
+              U_NA  &kp Z  &kp J  &zz       &kp V             &caps_word &qu      &kp SLASH       &kp RET        &kp SQT
+              &zh &zi &ze &za &kp W             &kp COMMA &ja &je &ji   &hm LGUI H
+              &kp Q &zl &zo &zu       &kp B             &kp MINUS &ju &jo &zy &lt BUTTON K
+                            &lt MEDIA ESC &lt NAV R   &lt MOUSE TAB             &lt SYM BSPC &lt NUM SPC  &lt FUN DEL
+                >;
+        };
+        adaptive_keys_layer_a {
+            bindings = <
+              &trans &trans &trans  &trans &trans    &trans &trans  &kp U  &trans &trans
+              &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans
+              &trans &trans &trans &trans  &trans    &trans &trans &trans &trans &trans
+                            &trans &trans &trans    &trans &trans &trans
+                >;
+        };
+        adaptive_keys_layer_s {
+            bindings = <
+              &trans &trans &trans  &trans &trans    &trans &trans  &kp C  &trans &trans
+              &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans
+              &trans &trans &trans &trans  &trans    &trans &trans &trans &trans &trans
+                            &trans &trans &trans    &trans &trans &trans
+                >;
+        };
+        adaptive_keys_layer_b {
+            bindings = <
+              &trans &trans &trans  &trans &trans    &trans &trans  &trans  &trans &trans
+              &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans
+              &trans &trans &trans &kp L  &trans    &trans &trans &trans &trans &trans
+                            &trans &trans &trans    &trans &trans &trans
+                >;
+        };
+        adaptive_keys_layer_gp {
+            bindings = <
+              &trans &trans &kp L  &trans &trans    &trans &trans &trans  &trans &trans
+              &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans
+              &trans &trans &trans &trans  &trans    &trans &trans &trans &trans &trans
+                            &trans &trans &trans    &trans &trans &trans
+                >;
+        };
+        adaptive_keys_layer_m {
+            bindings = <
+              &trans &trans &trans  &trans &kp  B    &trans &trans &trans  &trans &trans
+              &trans &trans &trans &trans &trans    &trans &trans &trans &trans &trans
+              &trans &trans &trans &trans  &trans    &trans &trans &trans &trans &trans
+                            &trans &trans &trans    &trans &trans &trans
+                >;
+        };
+        qwerty_layer {
 		bindings = <
-		&kp NUM_1  &kp NUM_2    &kp NUM_3    &kp NUM_4    &kp NUM_5		&kp NUM_6 &kp NUM_7 &kp NUM_8 &kp NUM_9 &kp NUM_0 
-		&kp TAB    &kp LC(S)    &kp DQT      &kp PIPE2     &kp HASH 		&kp MINUS &kp EQL  &kp LBKT &kp RBKT  &kp DEL 
-		&kp ESC    &kp TILDE 	&kp NON_US_BSLH &kp NON_US_HASH  &kp TILDE2 	&kp MINUS &kp GRAVE &kp LBKT &kp RBKT  &kp DEL 
-					    &mo 1  &kp LGUI  					&kp RGUI &mo 2 
+		&kp ESC &kp Q &kp W &kp E &kp R 						&kp Y &kp U  &kp UP    &kp O   &kp BSPC 
+		&kp LCTRL  &kp A &kp S &kp D &kp F 			        	        &kp H &kp LEFT &kp DOWN &kp RIGHT &kp RET
+		&kp LSHFT &kp Z &kp X &kp C &kp V				        &kp N &kp M  &kp CMMA &kp DOT &kp RSHFT
+          		&trans		&kp SPC &kp TAB  				&kp RALT &kp RCTRL &trans
 		>;
 		};
-		
-		right_layer {
-		bindings = <
-		&kp BANG  &kp ATSN &kp HASH  &kp DLLR  &kp PRCT    			&kp CRRT  &kp AMPS &kp KMLT &kp LPRN &kp RPRN 
-		&kp HASH  &kp QMARK  &kp FSLH  &kp COLN  &kp SCLN 			&kp MINUS &kp KP_EQUAL  &kp LBRC  &kp RBRC   &kp BKSP
-		&kp LSFT  &kp KPLS &kp LBKT &kp RBKT   &kp BSLH    			&kp UNDER &kp LEFT &kp DOWN &kp UP  &kp RIGHT
-					  &mo 3 &kp LCTL  				&kp SPC  &mo 2 
-		>;
-		};	
-		
-		tri_layer {
-		bindings = <
-		&kp NUM_1  &kp NUM_2    &kp NUM_3    &kp NUM_4    &kp NUM_5 			&trans &trans   &trans   &trans  &trans
-		&kp F1 &kp F2 &kp F3 &kp F4 &kp F5  						&trans &kp PG_UP  &kp K_VOL_UP &kp K_MUTE &trans 
-		&bt BT_CLR  &bt BT_NXT &bt BT_PRV &kp F6 &kp F7   				&trans &kp PG_DN  &kp K_VOL_DN  &trans &trans   
-					 &trans &trans  					&trans &trans 
-		>;
-		};	
-        
-	};
+    };
 };
+
+/ {
+  behaviors {
+    hm: homerow_mods {
+      compatible = "zmk,behavior-hold-tap";
+      label = "HOMEROW_MODS";
+      #binding-cells = <2>;
+      tapping_term_ms = <U_TAPPING_TERM>;
+      flavor = "tap-preferred";
+      bindings = <&kp>, <&kp>;
+    };
+    hm_ak_s: hm_ak_s {
+        compatible = "zmk,behavior-hold-tap";
+        label = "hm_ak_s";
+        #binding-cells = <2>;
+        tapping-term-ms = <200>;
+        quick-tap-ms = <50>;
+        flavor = "balanced";
+        bindings = <&kp>, <&ak_s>;
+    };
+    hm_ak_a: hm_ak_a {
+        compatible = "zmk,behavior-hold-tap";
+        label = "hm_ak_a";
+        #binding-cells = <2>;
+        tapping-term-ms = <200>;
+        quick-tap-ms = <50>;
+        flavor = "balanced";
+        bindings = <&kp>, <&ak_a>;
+    };
+    MACRO(th, <&kp T>, <&kp H>)
+    MACRO(qu, <&kp Q>, <&kp U>)
+    MACRO(ja, <&kp J>, <&kp A>)
+    MACRO(je, <&kp J>, <&kp E>)
+    MACRO(ji, <&kp J>, <&kp I>)
+    MACRO(jo, <&kp J>, <&kp O>)
+    MACRO(ju, <&kp J>, <&kp U>)
+    MACRO(za, <&kp Z>, <&kp A>)
+    MACRO(ze, <&kp Z>, <&kp E>)
+    MACRO(zi, <&kp Z>, <&kp I>)
+    MACRO(zo, <&kp Z>, <&kp O>)
+    MACRO(zu, <&kp Z>, <&kp U>)
+    MACRO(zz, <&kp Z>, <&kp Z>)
+    MACRO(zl, <&kp Z>, <&kp L>)
+    MACRO(zh, <&kp Z>, <&kp H>)
+    MACRO(zy, <&kp Z>, <&kp Y>)
+    MACRO(he, <&kp H>, <&kp E>)
+    MACRO(ch, <&kp C>, <&kp H>)
+    MACRO(gh, <&kp G>, <&kp H>)
+    MACRO(wh, <&kp W>, <&kp H>)
+    MACRO(ph, <&kp P>, <&kp H>)
+    MACRO(sh, <&kp S>, <&kp H>)
+    
+
+    MACRO(ak_s, <&macro_tap &kp S>, <&macro_tap &sl AKs>)
+    MACRO(ak_a, <&macro_tap &kp A>, <&macro_tap &sl AKa>)
+    MACRO(ak_b, <&macro_tap &kp B>, <&macro_tap &sl AKb>)
+    MACRO(ak_m, <&macro_tap &kp M>, <&macro_tap &sl AKm>)
+    MACRO(ak_g, <&macro_tap &kp G>, <&macro_tap &sl AKgp>)
+    MACRO(ak_p, <&macro_tap &kp P>, <&macro_tap &sl AKgp>)
+  };
+};
+
